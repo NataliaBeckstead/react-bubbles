@@ -22,12 +22,33 @@ const BubblePage = () => {
 				setIsLoading(false);
 				setError(`Error: ${err.response.status} ${err.response.statusText}`);
 			});
-	}, []);
+  }, []);
+  const updateColors = () => {
+    axiosWithAuth()
+      .get("/api/colors")
+      .then(res => {
+        setColorList(res.data);
+      })
+  }
+  useEffect(() => {
+    updateColors();
+  }, [])
 
   return (
     <>
-      <ColorList colors={colorList} updateColors={setColorList} />
-      <Bubbles colors={colorList} />
+      {isLoading && (
+				<div className="loading">
+					<h2>Loading Colors...</h2>
+				</div>
+			)}
+			{!isLoading && error && <div className="error">{error}</div>}
+			{!isLoading &&
+        !error &&
+        <>
+          <ColorList colors={colorList} updateColors={updateColors} />
+          <Bubbles colors={colorList} />
+        </>
+			}
     </>
   );
 };
